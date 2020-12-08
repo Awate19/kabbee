@@ -1,0 +1,1852 @@
+swagger: '2.0'
+info:
+  description: Shamat Web & Mobile App.
+  version: 1.0.0
+  title: 'Shamat API Specificatiion '
+  termsOfService: ''
+  contact:
+    email: kabeeEnterprise@kabbee.com
+host: 'localhost:4010'
+tags:
+  - name: BaseLine
+    description: Routes of BaseLine
+  - name: Sprint 2
+    description: Routes of Sprint 2
+  - name: Sprint 3
+    description: Routes of Sprint 3
+schemes:
+  - http
+paths:
+  /user/add:
+    post:
+      tags:
+        - BaseLine
+      summary: Add new user
+      description: ''
+      operationId: registerNewAgent
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: awega2010@gmail.com
+              firstName:
+                type: string
+                example: Awet
+              middleName:
+                type: string
+                example: Weldehaimanot
+              lastName:
+                type: string
+                example: Nuguse
+              phone:
+                type: number
+                example: 567576768726
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Only
+          required: true
+      responses:
+        '200':
+          description: Succesfully Saved and Verfication Email is Sent to ur Email
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Succesfully Saved and Verfication Email is Sent to ur Email.
+              detail:
+                $ref: '#/definitions/User'
+        '400':
+          description: Body Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body validation Error
+              detail:
+                type: string
+                example: email must be verfied Email address
+        '500':
+          description: Network Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Network Error
+  '/user/invitation/{token}':
+    put:
+      tags:
+        - BaseLine
+      summary: This route is found on the user Email and will Forwarded the user to the Registration form
+      description: ''
+      operationId: forwardedToRegistration
+      produces:
+        - application/json
+        - application/
+      parameters:
+        - in: path
+          name: token
+          type: string
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Forwarded to the Registration form
+        '400':
+          description: User Already Registered
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: The user has already Registered
+        '404':
+          description: Invailed Token
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalied Token
+  /user/new:
+    get:
+      tags:
+        - BaseLine
+      summary: get All new users not Already registered
+      description: ''
+      operationId: getAllNewUsers
+      produces:
+        - application/json
+        - application/
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin/Agent
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Requested Succesfully
+              detail:
+                type: array
+                items:
+                  $ref: '#/definitions/User'
+        '404':
+          description: bad request
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User Not Found
+  /auth:
+    post:
+      tags:
+        - BaseLine
+      summary: to login into the system
+      description: ''
+      operationId: login
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: List of user object
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: awega2010@gmail.com
+              password:
+                type: string
+                example: '123456'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Body Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body validation Error
+              detail:
+                type: string
+                example: password Length should be six characters long
+        '404':
+          description: User Not verfied
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User is not verfied
+        '429':
+          description: Request Time Limit
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 'Too many accounts created from this User, please try again after 15 Minutes'
+  '/resetPassword/{id}/{token}':
+    get:
+      tags:
+        - BaseLine
+      summary: get changed Password form
+      description: ''
+      operationId: getChangedPassword
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: path
+          name: id
+          type: string
+          required: true
+        - in: path
+          name: token
+          type: string
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Forwarded to the Change password form
+        '400':
+          description: Invalied Request Parameter
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalied Request Parameter
+              detail:
+                type: string
+                example: boolvalue Must be True or false
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User not Found
+        '429':
+          description: Reset Expired
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Reset Password time expired
+  /resetPassword/reset:
+    post:
+      tags:
+        - BaseLine
+      summary: Set new Password
+      description: ''
+      operationId: setNewPassword
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: to reset password
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+              newPassword:
+                type: string
+              token:
+                type: string
+      responses:
+        '200':
+          description: Succesfully Saved
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Succesfully Saved
+              detail:
+                type: object
+                properties:
+                  firstName:
+                    type: string
+                    example: Awet
+                  lastName:
+                    type: string
+                    example: weldehaimanot
+                  email:
+                    type: string
+                    example: awega2010@gmail.com
+                  userType:
+                    type: string
+                    example: Receiver agent
+        '400':
+          description: Body Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body validation Error
+              detail:
+                type: string
+                example: password Length should be six characters long
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User not Found
+        '429':
+          description: Reset Expired
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Reset Password time expired
+  /resetPassword/forgot:
+    post:
+      tags:
+        - BaseLine
+      summary: to reset the password
+      description: ''
+      operationId: resetPassword
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: to reset password
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+      responses:
+        '200':
+          description: Verfication Email is Sent
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Verfication email sent
+              detail:
+                type: object
+        '400':
+          description: Body Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body validation Error
+              detail:
+                type: string
+                example: email field is required
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User not Found
+        '500':
+          description: Sending Mail Failed
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Sending Email failed
+  '/user/{userId}':
+    get:
+      tags:
+        - BaseLine
+      summary: View User Profile
+      description: ''
+      operationId: getUserProfile
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin/Agent
+          required: true
+        - in: path
+          name: userId
+          type: string
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully requested
+              detail:
+                $ref: '#/definitions/User'
+        '400':
+          description: Invalied Request Parameter
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalied Request Parameter
+              detail:
+                type: string
+                example: user id is Invalied
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User not Found
+  /user:
+    put:
+      tags:
+        - BaseLine
+      summary: update User profile
+      description: ''
+      operationId: updateUserProfile
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin
+          required: true
+        - in: body
+          name: body
+          description: update user info
+          required: true
+          schema:
+            type: object
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully updated
+              detail:
+                type: object
+                $ref: '#/definitions/User'
+        '400':
+          description: Body Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body validation Error
+              detail:
+                type: string
+                example: password Length should be six characters long
+    post:
+      tags:
+        - BaseLine
+      summary: User Registration (Agents)
+      description: ''
+      operationId: createUser
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: Created user object
+          required: true
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              user:
+                $ref: '#/definitions/RequestUser'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Body Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body validation Error
+              detail:
+                type: string
+                example: password Length should be six characters long
+  /user/me:
+    put:
+      tags:
+        - BaseLine
+      summary: update my profile
+      description: ''
+      operationId: updateMyProfile
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin/Agent
+          required: true
+        - in: body
+          name: body
+          description: update user info
+          required: true
+          schema:
+            type: object
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully updated
+              detail:
+                type: object
+                $ref: '#/definitions/User'
+    get:
+      tags:
+        - BaseLine
+      summary: View My Profile
+      description: ''
+      operationId: getMyProfile
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin/Agent
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully requested
+              detail:
+                $ref: '#/definitions/User'
+        '400':
+          description: Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Validation Error
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User not Found
+  '/agent/isActive/{boolValue}':
+    get:
+      tags:
+        - BaseLine
+      summary: get all Active/inActive Agents
+      description: ''
+      operationId: getActiveOrInactiveAgent
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: path
+          name: boolValue
+          type: boolean
+          required: true
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Only
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully requested
+              detail:
+                type: array
+                items:
+                  $ref: '#/definitions/User'
+        '400':
+          description: Invalied Request Parameter
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalied Request Parameter
+              detail:
+                type: string
+                example: boolvalue Must be True or false
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User not Found
+  /agent:
+    get:
+      tags:
+        - BaseLine
+      summary: get all Active/inActive Agents
+      description: ''
+      operationId: getAgentsBasedOnQuery
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: query
+          name: isActive
+          type: boolean
+        - in: query
+          name: isOnHold
+          type: boolean
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Only
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully requested
+              detail:
+                type: array
+                items:
+                  $ref: '#/definitions/User'
+        '400':
+          description: Invalied Request Parameter
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalied Request Parameter
+              detail:
+                type: string
+                example: boolvalue Must be True or false
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User not Found
+  /agent/active:
+    put:
+      tags:
+        - BaseLine
+      summary: set Agent Active/inActive
+      description: ''
+      operationId: setAgentActiveOrInactive
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Only
+          required: true
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              userId:
+                type: string
+              isActive:
+                type: boolean
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully requested
+              detail:
+                $ref: '#/definitions/User'
+        '400':
+          description: Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Validation Error
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User not Found
+  '/agent/isOnHold/{boolValue}':
+    get:
+      tags:
+        - BaseLine
+      summary: getting  Agent  onhold or notonhold
+      description: ''
+      operationId: getAgentonHold
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: path
+          name: boolValue
+          type: boolean
+          required: true
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Only
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully requested
+              detail:
+                type: array
+                items:
+                  $ref: '#/definitions/User'
+        '400':
+          description: Invalied Request Parameter
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalied Request Parameter
+              detail:
+                type: string
+                example: boolvalue Must be True or false
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User not Found
+  /agent/onHold:
+    put:
+      tags:
+        - BaseLine
+      summary: set Agent Onhold/Not-Onhold
+      description: ''
+      operationId: setAgentOnHold/Unhold
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              userId:
+                type: string
+              isOnHold:
+                type: boolean
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Only
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully requested
+              detail:
+                $ref: '#/definitions/User'
+        '400':
+          description: Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Validation Error
+        '404':
+          description: User not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User not Found
+  /transaction/create:
+    post:
+      tags:
+        - BaseLine
+      summary: 'Create a Transaction by Sender Agent '
+      description: ''
+      operationId: createTransaction
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Sender Agent Only
+          required: true
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/RequestTransaction'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully Created
+              detail:
+                $ref: '#/definitions/Transaction'
+        '400':
+          description: Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body Validation Error
+              detail:
+                type: string
+                example: Commision Rate Must be a Number
+        '404':
+          description: Currency not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Currency not Found
+              detail:
+                type: string
+                example: Currency not Found
+  '/transaction/{id}':
+    get:
+      tags:
+        - Sprint 2
+      summary: get transaction By Id
+      description: ''
+      operationId: getAllTransaction
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Or Agent
+          required: true
+        - in: path
+          name: id
+          type: string
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully requested
+              detail:
+                $ref: '#/definitions/Transaction'
+        '400':
+          description: Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalid Id
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+  /transaction/pendingAssign:
+    get:
+      tags:
+        - Sprint 2
+      summary: get new created transactions
+      description: ''
+      operationId: getNewCreatedTransactions
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully requested
+              detail:
+                type: array
+                items:
+                  $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+  /transaction/:
+    get:
+      tags:
+        - Sprint 2
+      summary: get All transactions
+      description: ''
+      operationId: getAllTransactions
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully requested
+              detail:
+                type: array
+                items:
+                  $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+  /transaction/inProgress:
+    get:
+      tags:
+        - Sprint 2
+      summary: get Transactions in Progress (not closed)
+      description: ''
+      operationId: getInprogressTransactions
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Sender Agent
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully requested
+              detail:
+                type: array
+                items:
+                  $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+  /transaction/pendingDelivery:
+    get:
+      tags:
+        - Sprint 2
+      summary: get Transactions Pending for Delivery
+      description: ''
+      operationId: getPendingForDeliveryTransactions
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Or Receiver Agent
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully requested
+              detail:
+                type: array
+                items:
+                  $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+  /transaction/closed:
+    get:
+      tags:
+        - Sprint 2
+      summary: get closed transactions created by him/her
+      description: ''
+      operationId: getTransactionClosed
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Or Receiver Agent
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully Requested
+              detail:
+                type: array
+                items:
+                  $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+  /transaction/assign:
+    put:
+      tags:
+        - Sprint 2
+      summary: Assign new transaction to  receiver agent
+      description: ''
+      operationId: assignNewTransaction
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin
+          required: true
+        - in: body
+          name: body
+          description: assign new Transaction to receiver Agent
+          required: true
+          schema:
+            type: object
+            properties:
+              transactionId:
+                type: string
+              receiverAgentId:
+                type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully Assigned to the Receiver Agent
+              detail:
+                $ref: '#/definitions/Transaction'
+        '400':
+          description: Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body validation Error
+              detail:
+                type: string
+                example: Invalid Id
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+  /transaction/delivered:
+    put:
+      tags:
+        - Sprint 2
+      summary: set Transaction delivered or not delivered
+      description: ''
+      operationId: setTransactionDeliveredOrNotDelivered
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Receiver Agent
+          required: true
+        - in: body
+          name: body
+          description: assign a Transaction delivered or not Delivered
+          required: true
+          schema:
+            type: object
+            properties:
+              transactionId:
+                type: string
+              isDelivered:
+                type: boolean
+              reason:
+                type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully Updated
+              detail:
+                $ref: '#/definitions/Transaction'
+        '400':
+          description: Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body validation Error
+              detail:
+                type: string
+                example: Invalid Id
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+  /transaction/return/force:
+    put:
+      tags:
+        - Sprint 3
+      summary: set Transaction to return by Force from Pending Delivery or Request return  to Pending Assigning
+      description: ''
+      operationId: setTransactionReturnByForce
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Only
+          required: true
+        - in: body
+          name: body
+          description: ' '
+          required: true
+          schema:
+            type: object
+            properties:
+              transactionId:
+                type: string
+              reason:
+                type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully Updated
+              detail:
+                $ref: '#/definitions/Transaction'
+        '400':
+          description: Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body Validation Error
+              detail:
+                type: string
+                example: Invalid Id
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+  /transaction/return/request:
+    put:
+      tags:
+        - Sprint 3
+      summary: set Transaction to  Return Request from Pending Delivery
+      description: ''
+      operationId: setTransactionReturnRequest
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Only
+          required: true
+        - in: body
+          name: body
+          description: ' '
+          required: true
+          schema:
+            type: object
+            properties:
+              transactionId:
+                type: string
+              reason:
+                type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully Updated
+              detail:
+                $ref: '#/definitions/Transaction'
+        '400':
+          description: Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body Validation Error
+              detail:
+                type: string
+                example: Invalid Id
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+  /transaction/return/decide:
+    put:
+      tags:
+        - Sprint 3
+      summary: Decide to return a transaction to Pending Assigning or Pending Delivery from Return Request State
+      description: ''
+      operationId: DecideToReturnOrNot
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Receiver Agent
+          required: true
+        - in: body
+          name: body
+          description: ' '
+          required: true
+          schema:
+            type: object
+            properties:
+              transactionId:
+                type: string
+                example: 5f65ffbfd01dcc34d00e3eb5
+              isAccepted:
+                type: boolean
+              reason:
+                type: string
+            required:
+              - transactionId
+              - isAccepted
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully Updated
+              detail:
+                $ref: '#/definitions/Transaction'
+        '400':
+          description: Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body Validation Error
+              detail:
+                type: string
+                example: Invalid Id
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+  /transaction/edit:
+    put:
+      tags:
+        - Sprint 3
+      summary: Edit the transaction created by Sender Agent
+      description: ''
+      operationId: editTransaction
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Only
+          required: true
+        - in: body
+          name: body
+          description: ' '
+          required: true
+          schema:
+            type: object
+            properties:
+              transactionId:
+                type: string
+                example: 5f65ffbfd01dcc34d00e3eb5
+              transaction:
+                $ref: '#/definitions/Transaction'
+              reason:
+                type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully Updated
+              detail:
+                $ref: '#/definitions/Transaction'
+        '400':
+          description: Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body validation Error
+              detail:
+                type: string
+                example: Invalid Id
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+  /transaction/cancel:
+    put:
+      tags:
+        - Sprint 3
+      summary: Cancel the transaction created by Sender Agent
+      description: ''
+      operationId: cancelTransaction
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: header
+          name: x-auth-token
+          type: string
+          description: Admin Only
+          required: true
+        - in: body
+          name: body
+          description: ' '
+          required: true
+          schema:
+            type: object
+            properties:
+              transactionId:
+                type: string
+                example: 5f65ffbfd01dcc34d00e3eb5
+              reason:
+                type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: successfully Updated
+              detail:
+                $ref: '#/definitions/Transaction'
+        '400':
+          description: Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Body Validation Error
+              detail:
+                type: string
+                example: Invalid Id
+        '404':
+          description: Transaction not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Transaction not Found
+definitions:
+  Address:
+    type: object
+    properties:
+      country:
+        type: string
+        example: Canada
+      state:
+        type: string
+        example: Alberta
+      city:
+        type: string
+        example: Edmonton
+      phone:
+        type: number
+        example: 712345678
+  Login:
+    type: object
+    properties:
+      email:
+        type: string
+        example: awega2010@gmail.com
+        minLength: 1
+      password:
+        type: string
+        example: 12345678
+        minLength: 6
+      roles:
+        type: string
+        enum:
+          - Admin
+          - Agent
+      isActive:
+        type: boolean
+        example: true
+      isApproved:
+        type: boolean
+        example: false
+      isOnHold:
+        type: boolean
+        example: false
+  ClientContact:
+    type: object
+    properties:
+      firstName:
+        type: string
+        example: Awet
+      lastName:
+        type: string
+        example: Nuguse
+      address:
+        $ref: '#/definitions/Address'
+      accountNumber:
+        type: number
+        example: 812387630101
+      bankName:
+        type: string
+        example: Wegagen
+      remark:
+        type: string
+  ExchangeRate:
+    type: object
+    properties:
+      fromCurrency:
+        $ref: '#/definitions/Currency'
+      toCurrency:
+        $ref: '#/definitions/Currency'
+      rate:
+        type: number
+  CommissionRate:
+    type: object
+    properties:
+      currency:
+        $ref: '#/definitions/Currency'
+      rate:
+        type: number
+  Money:
+    type: object
+    properties:
+      currency:
+        $ref: '#/definitions/Currency'
+      amount:
+        type: number
+  Currency:
+    type: object
+    properties:
+      currencyName:
+        type: string
+        enum:
+          - Dollar
+          - Birr
+          - Nakfa
+          - Dirham
+      shortHand:
+        type: string
+        enum:
+          - USD
+          - Br
+          - Nkf
+          - AED
+      country:
+        type: string
+  User:
+    type: object
+    properties:
+      firstName:
+        type: string
+        example: Awet
+      middleName:
+        type: string
+        example: Weldehaimanot
+      lastName:
+        type: string
+        example: Nuguse
+      dob:
+        type: string
+        format: date
+      gender:
+        type: string
+        enum:
+          - Male
+          - Female
+      address:
+        $ref: '#/definitions/Address'
+      login:
+        $ref: '#/definitions/Login'
+      senderMaxCriticalAmount:
+        $ref: '#/definitions/RequestMoney'
+      receiverMInCriticalAmount:
+        $ref: '#/definitions/RequestMoney'
+      receiverSalaryPerTransaction:
+        $ref: '#/definitions/Money'
+      senderExchangeRate:
+        type: array
+        items:
+          $ref: '#/definitions/ExchangeRate'
+      senderCommissionRate:
+        type: array
+        items:
+          $ref: '#/definitions/CommissionRate'
+  TransactionAction:
+    type: object
+    properties:
+      actor:
+        type: string
+        format: uuid
+      action:
+        type: string
+        enum:
+          - CREATE
+          - EDIT
+          - ASSIGN
+          - FORCE_RETURN
+          - REQUEST_RETURN
+          - CANCEL
+          - DELIVER
+          - NOT_DELIVER
+          - ACCEPT_REQUEST
+          - REJECT_REQUEST
+      reason:
+        type: string
+      date:
+        type: string
+        format: date
+  RequestMoney:
+    type: object
+    properties:
+      currency:
+        type: string
+        example: 5f65ffbfd01dcc34d00e3eb5
+      amount:
+        type: number
+        example: 500
+  RequestUser:
+    type: object
+    properties:
+      firstName:
+        type: string
+        example: Awet
+      middleName:
+        type: string
+        example: Weldehaimanot
+      lastName:
+        type: string
+        example: NUguse
+      dob:
+        type: string
+        format: date
+      gender:
+        type: string
+        enum:
+          - Male
+          - Female
+      address:
+        $ref: '#/definitions/Address'
+      login:
+        type: object
+        properties:
+          email:
+            type: string
+            example: awega2010@gmail.com
+          password:
+            type: string
+            example: 12345678
+            minLength: 6
+  RequestTransaction:
+    type: object
+    properties:
+      senderClient:
+        $ref: '#/definitions/ClientContact'
+      receiverClient:
+        $ref: '#/definitions/ClientContact'
+      moneyToTransfer:
+        $ref: '#/definitions/RequestMoney'
+      moneyToPay:
+        $ref: '#/definitions/RequestMoney'
+      exchangeRate:
+        type: number
+        example: 43
+      commissionRate:
+        type: number
+        example: 5
+      totalPayment:
+        $ref: '#/definitions/RequestMoney'
+  Transaction:
+    type: object
+    properties:
+      senderClient:
+        $ref: '#/definitions/ClientContact'
+      receiverClient:
+        $ref: '#/definitions/ClientContact'
+      moneyToTransfer:
+        $ref: '#/definitions/RequestMoney'
+      moneyToPay:
+        $ref: '#/definitions/RequestMoney'
+      totalPayment:
+        $ref: '#/definitions/RequestMoney'
+      remark:
+        type: string
+      status:
+        type: number
+        enum:
+          - 0
+          - 100
+          - 200
+          - 800
+        description: |
+          Status Codes:
+            * `0` - when a transaction created
+            * `100` - when a transaction assigned to a receiver agent
+            * `200` - when a transaction is requested for * `return`
+            * `800` - when a transaction closed in aither way * `delivered` or * `canceled`
+      senderAgent:
+        type: string
+        example: 5f65ffbfd01dcc34d00e3eb5
+      receiverAgent:
+        type: string
+        example: 5f65ffbfd01dcc34d00e3eb5
+      admin:
+        type: string
+        example: 5f65ffbfd01dcc34d00e3eb5
+      commissionRate:
+        type: number
+      exchangeRate:
+        type: number
+      isDelivered:
+        type: boolean
+        example: true
+      isCanceled:
+        type: boolean
+        example: true
+      actions:
+        type: array
+        items:
+          $ref: '#/definitions/TransactionAction'
